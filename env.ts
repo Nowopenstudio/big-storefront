@@ -1,0 +1,4 @@
+export const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET as string
+export const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID as string
+export const token = process.env.NEXT_PUBLIC_SANITY_API_TOKEN as string
+export const apiVersion = process.env.NEXT_PUBLIC_SANITY_API || '2024-08-07'
