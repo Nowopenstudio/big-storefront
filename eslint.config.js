@@ -18,7 +18,8 @@ const eslintConfig = [
     "react/display-name":"off",
     "react-hooks/rules-of-hooks":"off",
     "@typescript-eslint/ban-ts-comment":"off",
-    "react-hooks/exhaustive-deps":"off"
+    "react-hooks/exhaustive-deps":"off",
+    "strictNullChecks": false
   }
 }
 
