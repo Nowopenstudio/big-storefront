@@ -17,9 +17,8 @@ type ProductTemplateProps = {
   region: HttpTypes.StoreRegion
   countryCode: string
   images: HttpTypes.StoreProductImage[]
-  sanity?: {
-    content: string
-  }
+  sanity?:any
+  
 
 }
 

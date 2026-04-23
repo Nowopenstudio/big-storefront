@@ -8,6 +8,26 @@ const productSchema: DocumentDefinition = {
       type: "string",
     },
     {
+      name:'prime',
+      type:'color',
+      title:'Primary',
+      options:{
+      colorList: [
+          {hex:'#ee473a'},
+          {hex:'#2364ed'},
+          {hex:'#2aae5a'},
+          {hex:'#ffc801'},
+          {hex:'#fd8026'},
+          {hex:'#80acd6'},
+          {hex:'#ffffff'},
+          {hex:'#e7e7e7'},
+          {hex:'#242424'},
+          {hex:'#67e7e5'},
+          {hex:'#fe97db'},
+          {hex:'#000000'}
+        ]}
+  },
+    {
       group: "content",
       name: "specs",
       of: [
@@ -42,6 +62,7 @@ const productSchema: DocumentDefinition = {
       name: "addons",
       type: "object",
     },
+
   ],
   name: "product",
   preview: {

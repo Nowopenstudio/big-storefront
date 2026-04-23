@@ -121,7 +121,7 @@ export default async function ProductPage(props: Props) {
   const selectedVariantId = searchParams.v_id
 
   // alternatively, you can filter the content by the language
-  const sanity = (await client.getDocument(pricedProduct.id))?.specs[0]
+  const sanity = (await client.getDocument(pricedProduct.id))
   const images = getImagesForVariant(pricedProduct, selectedVariantId)
 
   return (

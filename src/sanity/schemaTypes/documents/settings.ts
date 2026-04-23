@@ -49,6 +49,8 @@ export default{
         
           
         },
+        {name:'customerService',type:"string",title:"Customer Service Email"},
+        {name:'serviceNote',type:"array",title:"Customer Service Note",of:[{type:'block'}]},
         {name:'marquee',type:'object',title:'Marquee',fields:[{name:'text',type:'string',title:'Text'},{name:'link',type:'string',title:'Link'},{name:'external',type:'boolean',title:'Boolean'}]},
         
     ],

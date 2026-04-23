@@ -5,9 +5,7 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
 
 type ProductInfoProps = {
   product: HttpTypes.StoreProduct
-  sanity?: {
-    content: string
-  }
+  sanity?:any
 }
 
 const ProductInfo = ({ product, sanity }: ProductInfoProps) => {
@@ -22,7 +20,7 @@ const ProductInfo = ({ product, sanity }: ProductInfoProps) => {
             {product.collection.title}
           </LocalizedClientLink>
         )}
-        <H3Stroke text={product.title} color="black" bg="#FE97DB" />
+        <H3Stroke text={product.title} color={"#000000"} bg={sanity?.prime.hex || "#FE97DB"} />
         
          
 

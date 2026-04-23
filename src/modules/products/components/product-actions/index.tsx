@@ -16,9 +16,7 @@ import { useRouter } from "next/navigation"
 type ProductActionsProps = {
   product: HttpTypes.StoreProduct
   region: HttpTypes.StoreRegion
-  sanity?: {
-    content: string
-  }
+  sanity?:any
   disabled?: boolean
 }
 
@@ -147,7 +145,7 @@ export default function ProductActions({
             className="richText mt-6"
             data-testid="product-description"
           >
-            {sanity?.content || product.description}
+            {sanity?.specs[0]?.content || product.description}
           </Text>
     </div>
       <div  ref={actionsRef} className="absolute bottom-0 left-0 right-0">
