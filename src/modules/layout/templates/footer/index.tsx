@@ -21,8 +21,13 @@ export default async function Footer({data}:any) {
       <div className="bg-[--orange] max-w-full w-full h-full px-4 flex gap-6 justify-between items-center border-r-[3px] border-black relative z-10">
       {data.footerLogo.map((item:any,i:number)=>{
         return(
+<<<<<<< HEAD
           <div className="h-auto w-auto">
             <Image src={item.image} alt={item.alt} width={100} height={100} sizes="100vw"  className={`fadeOn w-auto h-full`} />
+=======
+          <div className="h-auto w-auto" key={i}>
+            <Image alt="footer logo" src={item.image} width={100} height={100} sizes="100vw"  className={`fadeOn w-auto h-full`} />
+>>>>>>> 48d2b60 (new)
           </div>
         )
       })}

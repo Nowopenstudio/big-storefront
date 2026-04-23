@@ -42,6 +42,22 @@ const nextConfig = {
         protocol: "https",
         hostname: "medusa-server-testing.s3.us-east-1.amazonaws.com",
       },
+<<<<<<< HEAD
+=======
+      {
+        protocol: 'https',
+        hostname: 's3.us-east-1.amazonaws.com',
+        port: '',
+        pathname: '/**', // Matches all paths
+      },
+      // If your URL looks like bucket-name.s3.us-east-1.amazonaws.com
+      {
+        protocol: 'https',
+        hostname: '**.s3.us-east-1.amazonaws.com',
+        port: '',
+        pathname: '/**',
+      },
+>>>>>>> 48d2b60 (new)
       ...(S3_HOSTNAME && S3_PATHNAME
         ? [
             {
