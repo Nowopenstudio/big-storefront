@@ -70,8 +70,14 @@ const nextConfig = {
   },
  
     cacheLife: {
+      
+      "force-cache": {
+        stale: 3600,    // Time before background revalidation (1 hour)
+        revalidate: 60,  // Minimum frequency to refresh on server (1 min)
+        expire: 86400,   // Max time to keep stale data (1 day)
+      },
       // "force-cache" is now a named profile here
-      customProfile: {
+      "default": {
         stale: 3600, // 1 hour
         revalidate: 10, // 24 hours
         expire: 604800, // 1 week
