@@ -50,24 +50,24 @@ export const updateLocale = async (localeCode: string): Promise<string> => {
 
     const cartCacheTag = await getCacheTag("carts")
     if (cartCacheTag) {
-      revalidateTag(cartCacheTag, "force-cache")
+      revalidateTag(cartCacheTag, "default")
     }
   }
 
   // Revalidate relevant caches to refresh content
   const productsCacheTag = await getCacheTag("products")
   if (productsCacheTag) {
-    revalidateTag(productsCacheTag, "force-cache")
+    revalidateTag(productsCacheTag, "default")
   }
 
   const categoriesCacheTag = await getCacheTag("categories")
   if (categoriesCacheTag) {
-    revalidateTag(categoriesCacheTag, "force-cache")
+    revalidateTag(categoriesCacheTag, "default")
   }
 
   const collectionsCacheTag = await getCacheTag("collections")
   if (collectionsCacheTag) {
-    revalidateTag(collectionsCacheTag, "force-cache")
+    revalidateTag(collectionsCacheTag, "default")
   }
 
   return localeCode

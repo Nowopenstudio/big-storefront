@@ -30,20 +30,31 @@ export default async function ProductPreview({
 
   return (
     <LocalizedClientLink href={`/products/${product.handle}`} >
-      <div data-testid="product-wrapper" className="relative">
+      <div data-testid="product-wrapper" className="relative singleProduct">
         <Thumbnail
           thumbnail={product.thumbnail}
           images={product.images}
           size="full"
           isFeatured={isFeatured}
         />
-        <div className="flex mt-4 justify-between absolute bottom-0 left-0 gap-x-4 p-4">
-          <Text className="navHold" data-testid="product-title">
-            {product.title}
-          </Text>
-          <div className="flex items-center gap-x-2 ">
-            {cheapestPrice && <PreviewPrice price={cheapestPrice} />}
-          </div>
+        <div className="flex mt-4 absolute bottom-0 left-0 gap-x-4 w-full h-[55px]  border-t-[3px] border-black bg-[--blue] border-r-[3px]">
+        <div className="flex justify-start items-center  bg-[--green] border-r-[3px] border-black viewButton">
+              <Text className="navHold px-8 " data-testid="product-title">
+                View →
+              </Text>
+            </div>
+         <div className="flex h-full px-6 ">
+            <div className="flex items-center flex-grow-2 ">
+              <Text className="navHold " data-testid="product-title">
+                {product.title}
+              </Text>
+            </div>
+            <div className="flex items-center flex-grow-2 px-6 navHold text-white ">
+              {cheapestPrice && <PreviewPrice price={cheapestPrice} />}
+            </div>
+            
+         </div>
+        
         </div>
       </div>
     </LocalizedClientLink>

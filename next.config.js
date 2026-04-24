@@ -19,6 +19,7 @@ const nextConfig = {
       fullUrl: true,
     },
   },
+  
   images: {
     remotePatterns: [
       {
@@ -65,7 +66,18 @@ const nextConfig = {
           ]
         : []),
     ],
+   
   },
+ 
+    cacheLife: {
+      // "force-cache" is now a named profile here
+      customProfile: {
+        stale: 3600, // 1 hour
+        revalidate: 10, // 24 hours
+        expire: 604800, // 1 week
+      }
+    }
+  
 }
 
 module.exports = nextConfig
