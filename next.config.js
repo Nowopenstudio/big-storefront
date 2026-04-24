@@ -31,40 +31,27 @@ const nextConfig = {
         hostname:'cdn.sanity.io',
         port:''
     },
-      {
-        protocol: "https",
-        hostname: "medusa-public-images.s3.eu-west-1.amazonaws.com",
-      },
-      {
-        protocol: "https",
-        hostname: "medusa-server-testing.s3.amazonaws.com",
-      },
-      {
-        protocol: "https",
-        hostname: "medusa-server-testing.s3.us-east-1.amazonaws.com",
-      },
-      {
-        protocol: 'https',
-        hostname: 's3.us-east-1.amazonaws.com',
-        port: '',
-        pathname: '/**', // Matches all paths
-      },
-      // If your URL looks like bucket-name.s3.us-east-1.amazonaws.com
-      {
-        protocol: 'https',
-        hostname: '**.s3.us-east-1.amazonaws.com',
-        port: '',
-        pathname: '/**',
-      },
-      ...(S3_HOSTNAME && S3_PATHNAME
-        ? [
-            {
-              protocol: "https",
-              hostname: S3_HOSTNAME,
-              pathname: S3_PATHNAME,
-            },
-          ]
-        : []),
+    {
+      protocol: "http",
+      hostname: "localhost",
+    },
+    {
+      protocol: "https",
+      hostname: "*.s3.*.amazonaws.com",
+    },
+    {
+      protocol: "https",
+      hostname: "*.s3.amazonaws.com",
+    },
+    ...(S3_HOSTNAME && S3_PATHNAME
+      ? [
+          {
+            protocol: "https",
+            hostname: S3_HOSTNAME,
+            pathname: S3_PATHNAME,
+          },
+        ]
+      : []),
     ],
    
   }
