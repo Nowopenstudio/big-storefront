@@ -1,42 +1,42 @@
 "use client"
-
 import { RadioGroup } from "@headlessui/react"
 import { isStripeLike, paymentInfoMap } from "@lib/constants"
 import { initiatePaymentSession } from "@lib/data/cart"
 import { CheckCircleSolid, CreditCard } from "@medusajs/icons"
-import { Button, Container, Heading, Text, clx } from "@medusajs/ui"
 import ErrorMessage from "@modules/checkout/components/error-message"
 import PaymentContainer, {
   StripeCardContainer,
 } from "@modules/checkout/components/payment-container"
 import Divider from "@modules/common/components/divider"
+import {
+  Button,
+  Container,
+  Heading,
+  Text,
+  clx,
+} from "@modules/common/components/ui"
+import { HttpTypes } from "@medusajs/types"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
-
-import { useContext } from "react"
-import { PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js"
-import { StripePaymentElementChangeEvent } from "@stripe/stripe-js"
-import { StripeContext } from "../payment-wrapper/stripe-wrapper"
 
 const Payment = ({
   cart,
   availablePaymentMethods,
 }: {
-  cart: any
-  availablePaymentMethods: any[]
+  cart: HttpTypes.StoreCart
+  availablePaymentMethods: { id: string }[]
 }) => {
   const activeSession = cart.payment_collection?.payment_sessions?.find(
-    (paymentSession: any) => paymentSession.status === "pending"
+    (paymentSession) => paymentSession.status === "pending"
   )
 
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [stripeComplete, setStripeComplete] = useState(false)
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>("")
-  
-  const stripeReady = useContext(StripeContext)
-  const stripe = stripeReady ? useStripe() : null
-  const elements = stripeReady ? useElements() : null
+  const [cardBrand, setCardBrand] = useState<string | null>(null)
+  const [cardComplete, setCardComplete] = useState(false)
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(
+    activeSession?.provider_id ?? ""
+  )
 
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -54,27 +54,12 @@ const Payment = ({
     }
   }
 
-  const handlePaymentElementChange = async (
-    event: StripePaymentElementChangeEvent
-  ) => {
-    // Catches the selected payment method and sets it to state
-    if (event.value.type) {
-      setSelectedPaymentMethod(event.value.type)
-    }
-    
-    // Sets stripeComplete on form completion
-    setStripeComplete(event.complete)
-  
-    // Clears any errors on successful completion
-    if (event.complete) {
-      setError(null)
-    }
-  }
-  const paidByGiftcard =
-    cart?.gift_cards && cart?.gift_cards?.length > 0 && cart?.total === 0
+  const paidByGiftcard = !!(
+    (cart as unknown as Record<string, unknown>)?.gift_cards && ((cart as unknown as Record<string, unknown>)?.gift_cards as unknown[])?.length > 0 && cart?.total === 0
+  )
 
   const paymentReady =
-    (activeSession && cart?.shipping_methods.length !== 0) || paidByGiftcard
+    (activeSession && (cart?.shipping_methods?.length ?? 0) !== 0) || paidByGiftcard
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
@@ -91,52 +76,36 @@ const Payment = ({
       scroll: false,
     })
   }
+
   const handleSubmit = async () => {
     setIsLoading(true)
-    setError(null)
-  
     try {
-      // Check if the necessary context is ready
-      if (!stripe || !elements) {
-        setError("Payment processing not ready. Please try again.")
-        return
+      const shouldInputCard =
+        isStripeLike(selectedPaymentMethod) && !activeSession
+
+      const checkActiveSession =
+        activeSession?.provider_id === selectedPaymentMethod
+
+      if (!checkActiveSession) {
+        await initiatePaymentSession(cart, {
+          provider_id: selectedPaymentMethod,
+        })
       }
-  
-      // Submit the payment method details
-      await elements.submit().catch((err) => {
-        console.error(err)
-        setError(err.message || "An error occurred with the payment")
-        return
-      })
-  
-      // Navigate to the final checkout step
-      router.push(pathname + "?" + createQueryString("step", "review"), {
-        scroll: false,
-      })
-    } catch (err: any) {
-      setError(err.message)
+
+      if (!shouldInputCard) {
+        return router.push(
+          pathname + "?" + createQueryString("step", "review"),
+          {
+            scroll: false,
+          }
+        )
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err))
     } finally {
       setIsLoading(false)
     }
   }
-
-  const initStripe = async () => {
-    try {
-      await initiatePaymentSession(cart, {
-        // TODO: change the provider ID if using a different ID in medusa-config.ts
-        provider_id: "pp_stripe_stripe",
-      })
-    } catch (err) {
-      console.error("Failed to initialize Stripe session:", err)
-      setError("Failed to initialize payment. Please try again.")
-    }
-  }
-  
-  useEffect(() => {
-    if (!activeSession && isOpen) {
-      initStripe()
-    }
-  }, [cart, isOpen, activeSession])
 
   useEffect(() => {
     setError(null)
@@ -172,19 +141,35 @@ const Payment = ({
       </div>
       <div>
         <div className={isOpen ? "block" : "hidden"}>
-        {!paidByGiftcard &&
-  availablePaymentMethods?.length &&
-  stripeReady && (
-    <div className="mt-5 transition-all duration-150 ease-in-out">
-      <PaymentElement
-        onChange={handlePaymentElementChange}
-        options={{
-          layout: "accordion",
-        }}
-      />
-    </div>
-  )
-}
+          {!paidByGiftcard && availablePaymentMethods?.length && (
+            <>
+              <RadioGroup
+                value={selectedPaymentMethod}
+                onChange={(value: string) => setPaymentMethod(value)}
+              >
+                {availablePaymentMethods.map((paymentMethod) => (
+                  <div key={paymentMethod.id}>
+                    {isStripeLike(paymentMethod.id) ? (
+                      <StripeCardContainer
+                        paymentProviderId={paymentMethod.id}
+                        selectedPaymentOptionId={selectedPaymentMethod}
+                        paymentInfoMap={paymentInfoMap}
+                        setCardBrand={setCardBrand}
+                        setError={setError}
+                        setCardComplete={setCardComplete}
+                      />
+                    ) : (
+                      <PaymentContainer
+                        paymentInfoMap={paymentInfoMap}
+                        paymentProviderId={paymentMethod.id}
+                        selectedPaymentOptionId={selectedPaymentMethod}
+                      />
+                    )}
+                  </div>
+                ))}
+              </RadioGroup>
+            </>
+          )}
 
           {paidByGiftcard && (
             <div className="flex flex-col w-1/3">
@@ -205,25 +190,25 @@ const Payment = ({
             data-testid="payment-method-error-message"
           />
 
-<Button
-  size="large"
-  className="mt-6"
-  onClick={handleSubmit}
-  isLoading={isLoading}
-  disabled={
-    !stripeComplete ||
-    !stripe ||
-    !elements ||
-    (!selectedPaymentMethod && !paidByGiftcard)
-  }
-  data-testid="submit-payment-button"
->
-  Continue to review
-</Button>
+          <Button
+            size="large"
+            className="mt-6"
+            onClick={handleSubmit}
+            isLoading={isLoading}
+            disabled={
+              (isStripeLike(selectedPaymentMethod) && !cardComplete) ||
+              (!selectedPaymentMethod && !paidByGiftcard)
+            }
+            data-testid="submit-payment-button"
+          >
+            {!activeSession && isStripeLike(selectedPaymentMethod)
+              ? " Enter card details"
+              : "Continue to review"}
+          </Button>
         </div>
 
         <div className={isOpen ? "hidden" : "block"}>
-          {cart && paymentReady && activeSession && selectedPaymentMethod ? (
+          {cart && paymentReady && activeSession ? (
             <div className="flex items-start gap-x-1 w-full">
               <div className="flex flex-col w-1/3">
                 <Text className="txt-medium-plus text-ui-fg-base mb-1">
@@ -250,7 +235,11 @@ const Payment = ({
                       <CreditCard />
                     )}
                   </Container>
-                  <Text>Another step may appear</Text>
+                  <Text>
+                    {isStripeLike(selectedPaymentMethod) && cardBrand
+                      ? cardBrand
+                      : "Another step will appear"}
+                  </Text>
                 </div>
               </div>
             </div>
